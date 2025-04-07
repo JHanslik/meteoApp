@@ -1,9 +1,15 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
 import { getIconForWeatherCode } from "../services/weatherApi";
+import { useWeather } from "../contexts/WeatherContext";
 
-const HourlyForecast = ({ hourlyData }) => {
-  if (!hourlyData || !hourlyData.hourly) return null;
+const HourlyForecast = () => {
+  const { weatherData, isDayTime } = useWeather();
+
+  if (!weatherData || !weatherData.hourly || !weatherData.hourly.hourly)
+    return null;
+
+  const hourlyData = weatherData.hourly;
 
   // Récupérer les données horaires pour les prochaines 24 heures
   const hourlyTimes = hourlyData.hourly.time.slice(0, 24);
@@ -19,11 +25,12 @@ const HourlyForecast = ({ hourlyData }) => {
         style={styles.scrollView}
       >
         {hourlyTimes.map((time, index) => {
+          const timestamp = new Date(time).getTime();
           const date = new Date(time);
           const hourTime = date.getHours();
 
-          // Déterminer si c'est le jour ou la nuit
-          const isDay = hourTime >= 6 && hourTime < 20;
+          // Utiliser la fonction du contexte pour déterminer jour/nuit
+          const isDay = isDayTime(timestamp);
 
           return (
             <View key={index} style={styles.hourlyItem}>

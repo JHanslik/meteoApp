@@ -1,64 +1,65 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { getWeatherIcon } from "../services/weatherApi";
+import { useWeather } from "../contexts/WeatherContext";
 
-const CurrentWeather = ({ weatherData }) => {
-  if (!weatherData) return null;
+const CurrentWeather = () => {
+  const { weatherData, isDayTime } = useWeather();
+
+  if (!weatherData || !weatherData.current) return null;
+
+  const currentData = weatherData.current;
 
   // Déterminer si c'est le jour ou la nuit
-  // Vérifier si l'icône de OpenWeatherMap contient déjà 'd' ou 'n'
-  // Si oui, on utilise directement cette information
-  const iconCode = weatherData.weather[0].icon;
+  const iconCode = currentData.weather[0].icon;
   const isDay = iconCode.endsWith("d");
 
   return (
     <View style={styles.container}>
-      <Text style={styles.location}>{weatherData.name}</Text>
+      <Text style={styles.location}>{currentData.name}</Text>
 
       <View style={styles.mainInfo}>
         <Image
-          source={{ uri: getWeatherIcon(weatherData.weather[0].icon) }}
+          source={{ uri: getWeatherIcon(currentData.weather[0].icon) }}
           style={styles.weatherIcon}
         />
         <Text style={styles.temperature}>
-          {Math.round(weatherData.main.temp)}°C
+          {Math.round(currentData.main.temp)}°C
         </Text>
       </View>
 
       <Text style={styles.description}>
-        {weatherData.weather[0].description}
+        {currentData.weather[0].description}
       </Text>
 
       <View style={styles.detailsContainer}>
         <View style={styles.detailItem}>
           <Text style={styles.detailLabel}>Ressenti</Text>
           <Text style={styles.detailValue}>
-            {Math.round(weatherData.main.feels_like)}°C
+            {Math.round(currentData.main.feels_like)}°C
           </Text>
         </View>
 
         <View style={styles.detailItem}>
           <Text style={styles.detailLabel}>Humidité</Text>
-          <Text style={styles.detailValue}>{weatherData.main.humidity}%</Text>
+          <Text style={styles.detailValue}>{currentData.main.humidity}%</Text>
         </View>
 
         {/* Option: Afficher l'heure du lever/coucher du soleil */}
-        {weatherData.sys && (
-          <View style={styles.sunTimesContainer}>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>
-                {isDay ? "Coucher" : "Lever"}
-              </Text>
-              <Text style={styles.detailValue}>
-                {new Date(
-                  (isDay ? weatherData.sys.sunset : weatherData.sys.sunrise) *
-                    1000
-                ).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </Text>
-            </View>
+        {currentData.sys && (
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>
+              {isDay ? "Coucher" : "Lever"}
+            </Text>
+            <Text style={styles.detailValue}>
+              {new Date(
+                (isDay ? currentData.sys.sunset : currentData.sys.sunrise) *
+                  1000
+              ).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Text>
           </View>
         )}
       </View>
@@ -116,9 +117,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#FFFFFF",
-  },
-  sunTimesContainer: {
-    alignItems: "center",
   },
 });
 

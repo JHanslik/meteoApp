@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -7,64 +7,31 @@ import {
   ActivityIndicator,
   ImageBackground,
 } from "react-native";
-import * as Location from "expo-location";
-import { fetchWeatherData } from "./services/weatherApi";
 import CurrentWeather from "./components/CurrentWeather";
 import HourlyForecast from "./components/HourlyForecast";
+import { WeatherProvider, useWeather } from "./contexts/WeatherContext";
 
-export default function App() {
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [weatherData, setWeatherData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        // Demander la permission d'accéder à la localisation
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          setErrorMsg("Permission de localisation refusée");
-          setLoading(false);
-          return;
-        }
-
-        // Obtenir la position actuelle
-        let location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
-
-        // Récupérer les données météo
-        const data = await fetchWeatherData(
-          location.coords.latitude,
-          location.coords.longitude
-        );
-        setWeatherData(data);
-      } catch (error) {
-        console.error("Erreur:", error);
-        setErrorMsg("Impossible de récupérer les données météo");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+// Composant principal qui utilise le contexte
+const WeatherApp = () => {
+  const { weatherData, loading, error } = useWeather();
 
   let content;
   if (loading) {
     content = <ActivityIndicator size="large" color="#0000ff" />;
-  } else if (errorMsg) {
-    content = <Text style={styles.errorText}>{errorMsg}</Text>;
+  } else if (error) {
+    content = <Text style={styles.errorText}>{error}</Text>;
   } else if (weatherData) {
     content = (
       <>
-        <CurrentWeather weatherData={weatherData.current} />
-        <HourlyForecast hourlyData={weatherData.hourly} />
+        <CurrentWeather />
+        <HourlyForecast />
       </>
     );
   }
 
   return (
     <ImageBackground
-      source={require("./assets/images/weather-background.jpg")} // Vous devrez ajouter cette image
+      source={require("./assets/images/weather-background.jpg")}
       style={styles.background}
     >
       <View style={styles.container}>
@@ -72,6 +39,15 @@ export default function App() {
         {content}
       </View>
     </ImageBackground>
+  );
+};
+
+// Composant racine qui enveloppe l'application avec le Provider
+export default function App() {
+  return (
+    <WeatherProvider>
+      <WeatherApp />
+    </WeatherProvider>
   );
 }
 
