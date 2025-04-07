@@ -6,9 +6,11 @@ import {
   View,
   ActivityIndicator,
   ImageBackground,
+  ScrollView,
 } from "react-native";
 import CurrentWeather from "./components/CurrentWeather";
 import HourlyForecast from "./components/HourlyForecast";
+import ForecastChart from "./components/ForecastChart";
 import { WeatherProvider, useWeather } from "./contexts/WeatherContext";
 
 // Composant principal qui utilise le contexte
@@ -22,10 +24,11 @@ const WeatherApp = () => {
     content = <Text style={styles.errorText}>{error}</Text>;
   } else if (weatherData) {
     content = (
-      <>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <CurrentWeather />
         <HourlyForecast />
-      </>
+        <ForecastChart />
+      </ScrollView>
     );
   }
 
