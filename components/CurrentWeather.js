@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { getWeatherIcon } from "../services/weatherApi";
 import { useWeather } from "../contexts/WeatherContext";
+import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const CurrentWeather = () => {
   const { weatherData, isDayTime } = useWeather();
@@ -34,6 +35,12 @@ const CurrentWeather = () => {
 
       <View style={styles.detailsContainer}>
         <View style={styles.detailItem}>
+          <MaterialCommunityIcons
+            name="thermometer"
+            size={24}
+            color="#FFFFFF"
+            style={styles.detailIcon}
+          />
           <Text style={styles.detailLabel}>Ressenti</Text>
           <Text style={styles.detailValue}>
             {Math.round(currentData.main.feels_like)}°C
@@ -41,6 +48,12 @@ const CurrentWeather = () => {
         </View>
 
         <View style={styles.detailItem}>
+          <Ionicons
+            name="water"
+            size={24}
+            color="#FFFFFF"
+            style={styles.detailIcon}
+          />
           <Text style={styles.detailLabel}>Humidité</Text>
           <Text style={styles.detailValue}>{currentData.main.humidity}%</Text>
         </View>
@@ -48,6 +61,12 @@ const CurrentWeather = () => {
         {/* Option: Afficher l'heure du lever/coucher du soleil */}
         {currentData.sys && (
           <View style={styles.detailItem}>
+            <Feather
+              name={isDay ? "sunset" : "sunrise"}
+              size={24}
+              color="#FFFFFF"
+              style={styles.detailIcon}
+            />
             <Text style={styles.detailLabel}>
               {isDay ? "Coucher" : "Lever"}
             </Text>
@@ -105,16 +124,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 12,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.25)",
   },
   detailItem: {
     alignItems: "center",
+    flex: 1,
+  },
+  detailIcon: {
+    marginBottom: 5,
   },
   detailLabel: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#FFFFFF",
+    opacity: 0.8,
   },
   detailValue: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#FFFFFF",
   },
