@@ -92,11 +92,13 @@ const ForecastChart = () => {
         data: displayData.map((day) => day.max),
         color: (opacity = 1) => `rgba(255, 149, 0, ${opacity})`, // Utilisez opacity=1 pour une visibilité maximale
         strokeWidth: 4, // Augmentez l'épaisseur à 4 pour une meilleure visibilité
+        id: "max-temp", // Ajout d'un identifiant unique
       },
       {
         data: displayData.map((day) => day.min),
         color: (opacity = 1) => `rgba(79, 195, 247, ${opacity})`, // Utilisez opacity=1 pour une visibilité maximale
         strokeWidth: 4, // Augmentez l'épaisseur à 4 pour une meilleure visibilité
+        id: "min-temp", // Ajout d'un identifiant unique
       },
     ],
     legend: ["Maximale", "Minimale"],
@@ -206,7 +208,7 @@ const ForecastChart = () => {
             }}
             renderDotContent={({ x, y, index, indexData }) => (
               <View
-                key={index}
+                key={`dot-${index}-${indexData}`}
                 style={{
                   position: "absolute",
                   top: y - 10,
@@ -246,7 +248,7 @@ const ForecastChart = () => {
       >
         {displayData.map((day, i) => (
           <View
-            key={i}
+            key={`day-${day.date.toISOString()}`}
             style={[
               styles.dayItem,
               { width: dayItemWidth, marginHorizontal: 4 },
